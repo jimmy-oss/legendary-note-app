@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Moon, Sun, Plus, Trash2 } from "lucide-react";
+import { Moon, Sun, Plus, Trash2, Download, Search } from "lucide-react";
 import EmojiPicker from "emoji-picker-react";
 
 function App() {
@@ -14,13 +14,12 @@ function App() {
     return localStorage.getItem("legend-theme") === "light" ? false : true;
   });
   const [tag, setTag] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
-  // Save notes to localStorage
   useEffect(() => {
     localStorage.setItem("legend-notes", JSON.stringify(notes));
   }, [notes]);
 
-  // Save theme to localStorage
   useEffect(() => {
     localStorage.setItem("legend-theme", darkMode ? "dark" : "light");
     document.documentElement.classList.toggle("dark", darkMode);
@@ -45,6 +44,31 @@ function App() {
 
   const handleEmojiClick = (emojiData) => {
     setInput((prev) => prev + emojiData.emoji);
+  };
+
+  const filteredNotes = notes.filter((note) => {
+    const term = searchTerm.toLowerCase();
+    return (
+      note.text.toLowerCase().includes(term) ||
+      note.tag.toLowerCase().includes(term)
+    );
+  });
+
+  const exportNotes = (format) => {
+    const content =
+      format === "md"
+        ? notes.map(n => `**${n.tag || "Note"}**\n\n${n.text}`).join("\n\n---\n\n")
+        : notes.map(n => `[${n.tag || "Note"}]: ${n.text}`).join("\n\n");
+
+    const blob = new Blob([content], {
+      type: format === "md" ? "text/markdown" : "text/plain",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `legendary_notes.${format}`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -83,12 +107,18 @@ function App() {
           </button>
         </div>
 
-        <div className="mb-4">
+        <div className="flex gap-2 mb-4">
           <input
-            className="w-full p-2 rounded bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-            placeholder="Optional Tag (e.g., 🧠 Idea, 📚 Study)"
+            className="flex-1 p-2 rounded bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            placeholder="Optional Tag (e.g., 📚 Study)"
             value={tag}
             onChange={(e) => setTag(e.target.value)}
+          />
+          <input
+            className="flex-1 p-2 rounded bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            placeholder="🔍 Search notes or tags..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
 
@@ -102,8 +132,23 @@ function App() {
           </div>
         )}
 
+        <div className="flex gap-2 mb-6">
+          <button
+            onClick={() => exportNotes("txt")}
+            className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded flex items-center gap-2"
+          >
+            <Download size={16} /> Export .txt
+          </button>
+          <button
+            onClick={() => exportNotes("md")}
+            className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded flex items-center gap-2"
+          >
+            <Download size={16} /> Export .md
+          </button>
+        </div>
+
         <div className="space-y-3">
-          {notes.map((note) => (
+          {filteredNotes.map((note) => (
             <div
               key={note.id}
               className={`p-4 rounded-lg shadow-md flex justify-between items-start transition transform hover:scale-[1.01] ${
@@ -128,9 +173,9 @@ function App() {
             </div>
           ))}
 
-          {notes.length === 0 && (
+          {filteredNotes.length === 0 && (
             <p className="text-center text-gray-500 italic animate-fadeIn">
-              No notes yet. Start writing your legendary journey ✨
+              No results found. Try a different tag or keyword.
             </p>
           )}
         </div>
