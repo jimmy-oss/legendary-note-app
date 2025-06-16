@@ -2,7 +2,7 @@
 ⚛️ A beautiful and fully responsive Notes App built using React + TailwindCSS with features like tagging, emoji support, pinning, dark mode, and localStorage — no backend required.
 
 ### 🔥 Live Demo
-🔗 Watch the Full YouTube Build
+🔗 Watch the Full YouTube Build https://shorturl.at/AN7Go
 🎥 Code, design, and polish — all explained step-by-step.
 
 ### ✨ Features
