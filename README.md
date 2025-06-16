@@ -39,6 +39,7 @@ Emoji Picker	Emoji input support
 LocalStorage	Save notes & theme persistently
 
 ### 📦 Installation
+```bash
 Clone the repository and install dependencies:
 git clone https://github.com/jimmy-oss/legendary-note-app
 cd legendary-notes
@@ -52,7 +53,7 @@ css
   ├── App.jsx
   ├── index.css
   └── main.jsx
-
+```
 ### 💡 Future Ideas
 ✅ Markdown rendering
 
